@@ -200,12 +200,18 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
         r2_cols = set([tc.col_ids[0] for tc in r2_cells])
 
         # Ensure all columns in r2 are in r1
+        print(f"R1_Col = {r1_cols}")
+        print(f"R2_Col = {r2_cols}")
         if len(r2_cols - r1_cols) >= 0:
+
             continue
+
+        print("passage du décalage")
 
         # Ensure r2 has mostly blank cells
         if len(r2_cols) / len(all_cols) > .01:
             continue
+        print("passage du blanc")
 
         merged_pairs.append((idx - 1, idx))
 
