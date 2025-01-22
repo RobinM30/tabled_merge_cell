@@ -182,13 +182,15 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
     ]
     if len(row_gaps) == 0:
         return
-
+    print(row_gaps)
     gap_thresh = np.percentile(row_gaps,0.9)
 
     for idx, row in enumerate(detection_result.rows[1:]):
         print(gap_thresh)
         prev_row = detection_result.rows[idx - 1]
         gap = find_row_gap(prev_row, row)
+        print("Gap:")
+        print(gap)
 
         # Ensure the gap between r2 and r1 is small
         if gap > gap_thresh:
