@@ -205,7 +205,7 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
         # Ensure all columns in r2 are in r1
         print(f"R1_Col = {r1_cols}")
         print(f"R2_Col = {r2_cols}")
-        if len(r2_cols - r1_cols) >= 0:
+        if len(r2_cols - r1_cols) > 0:
 
             continue
 
