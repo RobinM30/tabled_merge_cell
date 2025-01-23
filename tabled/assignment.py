@@ -256,7 +256,7 @@ def assign_rows_columns(detection_result: TableResult, image_size: list, heurist
     table_cells = initial_assignment(detection_result,tresh = 0)
     assign_overlappers(table_cells, detection_result, tresh = 0)
     total_unassigned = len([tc for tc in table_cells if tc.row_ids[0] is None or tc.col_ids[0] is None])
-    print(f"Non assigné {total_unassigned}. \n"
+    print(f"Non assigné {total_unassigned}. \n")
     unassigned_frac = total_unassigned / max(len(table_cells), 1)
 
     if unassigned_frac > heuristic_thresh:
