@@ -206,8 +206,8 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
         
     def find_gap_cells(list_cell1,list_cell2):
         values = []
-        for c1 in list_cell1
-            for c2 in list_cell2
+        for c1 in list_cell1:
+            for c2 in list_cell2:
                 values.append(calculate_horizontal_distance(c1.bbox,c2.bbox))
         return min(values)
 
