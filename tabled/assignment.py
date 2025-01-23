@@ -251,7 +251,7 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
 
 
 def assign_rows_columns(detection_result: TableResult, image_size: list, heuristic_thresh=.6) -> List[SpanTableCell]:
-    table_cells = initial_assignment(detection_result)
+    table_cells = initial_assignment(detection_result, tresh = 0)
     merge_multiline_rows(detection_result, table_cells)
     table_cells = initial_assignment(detection_result,tresh = 0)
     assign_overlappers(table_cells, detection_result, tresh = 0)
