@@ -220,7 +220,7 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
 
     merged_pairs_sorted = sorted(merged_pairs, key=lambda x: x[0], reverse=True)
     to_remove = set()
-    for r1_idx, r2_idx in merged_pairs:
+    for r1_idx, r2_idx in merged_pairs_sorted:
         print(r1_idx)
         detection_result.rows[r1_idx].bbox = [
             min(detection_result.rows[r1_idx].bbox[0], detection_result.rows[r2_idx].bbox[0]),
