@@ -212,7 +212,7 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
         print("passage du décalage")
 
         # Ensure r2 has mostly blank cells
-        if len(r2_cols) / len(all_cols) > .01:
+        if len(r2_cols) / len(all_cols) > .9:
             continue
         print("passage du blanc")
 
