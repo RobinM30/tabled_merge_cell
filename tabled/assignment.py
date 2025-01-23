@@ -239,7 +239,7 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
                 max(detection_result.rows[r1_idx].bbox[2], detection_result.rows[r2_idx].bbox[2]),
                 max(detection_result.rows[r1_idx].bbox[3], detection_result.rows[r2_idx].bbox[3])
             ]
-            new_row[-1].bbox = detection_result.rows[r1_idx].bbox
+            new_rows[-1].bbox = detection_result.rows[r1_idx].bbox
             detection_result.rows[idx].row_id = len(new_rows)-1
             print("Merged !")
             
