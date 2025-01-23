@@ -213,12 +213,24 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
             print(f"R2_Cel = {r2_cells}")
 
             
-            if gap > gap_thresh or len(r2_cols - r1_cols) > 0 or len(r2_cols) / len(all_cols) > 0.9:
+            reasons = []
+
+            if gap > gap_thresh:
+                reasons.append("'gap > gap_thresh'")
+            
+            if len(r2_cols - r1_cols) > 0:
+                reasons.append("'len(r2_cols - r1_cols) > 0'")
+            
+            if len(r2_cols) / len(all_cols) > 0.9:
+                reasons.append("'len(r2_cols) / len(all_cols) > 0.9'")
+            
+            if reasons:  # Si au moins une condition est vraie
+                print("Raisons pour entrer dans la boucle :", ", ".join(reasons))
                 row.row_id = len(new_rows)
                 new_rows.append(row)
                 current_cells = []
                 continue
-                
+                            
             r1_idx = prev_row.row_id
             r2_idx = row.row_id
             detection_result.rows[r1_idx].bbox = [
