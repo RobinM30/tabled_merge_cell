@@ -282,8 +282,8 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
            # if len(r2_cols - r1_cols) > 0:
            #     reasons.append("'len(r2_cols - r1_cols) > 0'")
             
-            if len(r2_cols) / len(all_cols) > 0.9:
-                reasons.append("'len(r2_cols) / len(all_cols) > 0.9'")
+            #if len(r2_cols) / len(all_cols) > 0.9:
+            #    reasons.append("'len(r2_cols) / len(all_cols) > 0.9'")
             
             if reasons:  # Si au moins une condition est vraie
                 print("Raisons pour entrer dans la boucle :", ", ".join(reasons))
@@ -312,8 +312,14 @@ def assign_rows_columns(detection_result: TableResult, image_size: list, heurist
     print("Table:")
     print(table_cells)
     merge_multiline_rows(detection_result, table_cells)
+    print("Table Merged:")
+    print(table_cells)
     table_cells = initial_assignment(detection_result,thresh = 0.6)
+    print("Table reassign:")
+    print(table_cells)
     assign_overlappers(table_cells, detection_result, thresh = 0.6)
+    print("Table overlaps:")
+    print(table_cells)
     total_unassigned = len([tc for tc in table_cells if tc.row_ids[0] is None or tc.col_ids[0] is None])
     print(f"Non assigné {total_unassigned}. \n")
     unassigned_frac = total_unassigned / max(len(table_cells), 1)
