@@ -57,7 +57,7 @@ def initial_assignment(detection_result: TableResult, thresh=.5) -> List[SpanTab
                 continue
 
             intersection_pct = Bbox(bbox=cell.bbox).intersection_pct(row)
-            if intersection_pct > max_intersection and intersection_pct > thresh:
+            if intersection_pct > max_intersection:
                 max_intersection = intersection_pct
                 row_pred = row.row_id
 
@@ -68,7 +68,7 @@ def initial_assignment(detection_result: TableResult, thresh=.5) -> List[SpanTab
                 continue
 
             intersection_pct = Bbox(bbox=cell.bbox).intersection_pct(col)
-            if intersection_pct > max_intersection and intersection_pct > thresh:
+            if intersection_pct > max_intersection:
                 max_intersection = intersection_pct
                 col_pred = col.col_id
 
