@@ -168,6 +168,7 @@ def handle_rowcol_spans(table_cells: list, detection_result: TableResult, thresh
 
 
 def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTableCell]):
+    print(table_cells)
     def find_row_gap(r1, r2):
         return min([abs(r1.bbox[1] - r2.bbox[3]), abs(r2.bbox[1] - r1.bbox[3])])
 
