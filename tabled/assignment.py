@@ -40,6 +40,7 @@ def overlapper_idxs(rows, field, thresh=.3):
 
 
 def initial_assignment(detection_result: TableResult, thresh=.5) -> List[SpanTableCell]:
+    print(detection_result)
     overlapper_rows = overlapper_idxs(detection_result.rows, field="row_id")
     overlapper_cols = overlapper_idxs(detection_result.cols, field="col_id")
 
