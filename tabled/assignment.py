@@ -80,7 +80,7 @@ def initial_assignment(detection_result: TableResult, thresh=.5) -> List[SpanTab
             if col.col_id in overlapper_cols:
                 continue
 
-            intersection_pct = x_overlap_pct(cell,row)
+            intersection_pct = x_overlap_pct(cell,col)
             if intersection_pct > max_intersection and intersection_pct > thresh:
                 max_intersection = intersection_pct
                 col_pred = col.col_id
@@ -118,7 +118,7 @@ def assign_overlappers(cells: List[SpanTableCell], detection_result: TableResult
             if col.col_id not in overlapper_cols:
                 continue
 
-            intersection_pct = x_overlap_pct(cell,row)
+            intersection_pct = x_overlap_pct(cell,col)
             if intersection_pct > max_intersection and intersection_pct > thresh:
                 max_intersection = intersection_pct
                 col_pred = col.col_id
