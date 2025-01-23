@@ -216,8 +216,9 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
             continue
         print("passage du blanc")
 
-        merged_pairs.append((idx - 1, idx))
+        merged_pairs.append((idx, idx+1))
 
+    merged_pairs_sorted = sorted(merged_pairs, key=lambda x: x[0], reverse=True)
     to_remove = set()
     for r1_idx, r2_idx in merged_pairs:
         print(r1_idx)
