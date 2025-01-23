@@ -176,6 +176,41 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
     def find_row_gap(r1, r2):
         return min([abs(r1.bbox[1] - r2.bbox[3]), abs(r2.bbox[1] - r1.bbox[3])])
 
+    def calculate_horizontal_distance(box1, box2):
+        """
+        Calcule la distance horizontale entre les bords ou coins des deux boîtes.
+        
+        :param box1: Liste [x1, y1, x2, y2] pour la première boîte
+        :param box2: Liste [x1, y1, x2, y2] pour la deuxième boîte
+        :return: Distance horizontale entre les deux boîtes
+        """
+        # Vérifier si les boîtes se chevauchent verticalement
+        if box1[3] < box2[1] or box2[3] < box1[1]:
+            # Si elles ne se chevauchent pas verticalement, calculer la distance horizontale minimale
+            # Cas où box1 est à gauche de box2
+            if box1[2] < box2[0]:
+                horizontal_distance = box2[0] - box1[2]
+            # Cas où box2 est à gauche de box1
+            elif box2[2] < box1[0]:
+                horizontal_distance = box1[0] - box2[2]
+            else:
+                # Elles se chevauchent horizontalement
+                horizontal_distance = 0
+        else:
+            # Si elles se chevauchent verticalement, calculer la distance horizontale entre les coins supérieurs ou inférieurs
+            top_distance = abs(box1[0] - box2[0])  # Distance entre les coins supérieurs gauche
+            bottom_distance = abs(box1[2] - box2[2])  # Distance entre les coins inférieurs droite
+            horizontal_distance = min(top_distance, bottom_distance)
+        
+        return horizontal_distance    
+        
+    def find_gap_cells(list_cell1,list_cell2):
+        values = []
+        for c1 in list_cell1
+            for c2 in list_cell2
+                values.append(calculate_horizontal_distance(c1.bbox,c2.bbox))
+        return min(values)
+
     all_cols = set([tc.col_ids[0] for tc in table_cells])
     if len(all_cols) == 0:
         return
@@ -196,7 +231,6 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
         for idx in range(nb_row):
             prev_row = new_rows[-1]
             row = detection_result.rows[idx]
-            gap = find_row_gap(prev_row, row)
     
             # Ensure the gap between r2 and r1 is small
 
@@ -205,6 +239,11 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
             r2_cells = [tc for tc in table_cells if tc.row_ids[0] == row.row_id]
             r1_cols = set([tc.col_ids[0] for tc in r1_cells])
             r2_cols = set([tc.col_ids[0] for tc in r2_cells])
+            if len(r1_cells)>0 and len(r2_cells)>0:
+                gap = find_gap_cells(r1_cells,r2_cells)
+            else :
+                gap = find_row_gap(prev_row, row)
+
     
             # Ensure all columns in r2 are in r1
             print(f"R1_Col = {r1_cols}")
