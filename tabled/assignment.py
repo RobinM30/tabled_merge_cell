@@ -243,7 +243,7 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
     ]
     if len(row_gaps) == 0:
         return
-    gap_thresh = np.percentile(row_gaps,90)
+    gap_thresh = np.percentile(row_gaps,80)
     nb_row = len(detection_result.rows)
     if nb_row>0:
         idx = 0
@@ -279,8 +279,8 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
             if gap > gap_thresh:
                 reasons.append("'gap > gap_thresh'")
             
-            if len(r2_cols - r1_cols) > 0:
-                reasons.append("'len(r2_cols - r1_cols) > 0'")
+           # if len(r2_cols - r1_cols) > 0:
+           #     reasons.append("'len(r2_cols - r1_cols) > 0'")
             
             if len(r2_cols) / len(all_cols) > 0.9:
                 reasons.append("'len(r2_cols) / len(all_cols) > 0.9'")
@@ -308,12 +308,12 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
 
 
 def assign_rows_columns(detection_result: TableResult, image_size: list, heuristic_thresh=.6) -> List[SpanTableCell]:
-    table_cells = initial_assignment(detection_result, thresh = 0.4)
+    table_cells = initial_assignment(detection_result, thresh = 0.6)
     print("Table:")
     print(table_cells)
     merge_multiline_rows(detection_result, table_cells)
-    table_cells = initial_assignment(detection_result,thresh = 0.4)
-    assign_overlappers(table_cells, detection_result, thresh = 0.4)
+    table_cells = initial_assignment(detection_result,thresh = 0.6)
+    assign_overlappers(table_cells, detection_result, thresh = 0.6)
     total_unassigned = len([tc for tc in table_cells if tc.row_ids[0] is None or tc.col_ids[0] is None])
     print(f"Non assigné {total_unassigned}. \n")
     unassigned_frac = total_unassigned / max(len(table_cells), 1)
