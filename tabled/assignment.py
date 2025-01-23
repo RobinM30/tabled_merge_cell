@@ -56,7 +56,7 @@ def initial_assignment(detection_result: TableResult, thresh=.5) -> List[SpanTab
             if row.row_id in overlapper_rows:
                 continue
 
-            intersection_pct = Bbox(bbox=cell.bbox).intersection_pct(row)
+            intersection_pct = Bbox(bbox=cell.bbox).y_overlap(row)
             if intersection_pct > max_intersection and intersection_pct > thresh:
                 max_intersection = intersection_pct
                 row_pred = row.row_id
@@ -67,7 +67,7 @@ def initial_assignment(detection_result: TableResult, thresh=.5) -> List[SpanTab
             if col.col_id in overlapper_cols:
                 continue
 
-            intersection_pct = Bbox(bbox=cell.bbox).intersection_pct(col)
+            intersection_pct = Bbox(bbox=cell.bbox).x_overlap(col)
             if intersection_pct > max_intersection and intersection_pct > thresh:
                 max_intersection = intersection_pct
                 col_pred = col.col_id
