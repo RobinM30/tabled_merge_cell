@@ -243,13 +243,14 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
                 gap = find_gap_cells(r1_cells,r2_cells)
             else :
                 gap = find_row_gap(prev_row, row)
+            print(f"Gap : {gap}")
 
     
             # Ensure all columns in r2 are in r1
             print(f"R1_Col = {r1_cols}")
             print(f"R2_Col = {r2_cols}")
             print(f"R1_Cel = {r1_cells}")
-            print(f"R2_Cel = {r2_cells}")
+            print(f"R2_Cel = {r2_cells}"\n\n")
 
             
             reasons = []
