@@ -6,12 +6,19 @@ from surya.schema import TableResult, Bbox
 from tabled.heuristics import heuristic_layout
 from tabled.schema import SpanTableCell
 
+def y_overlap_pct(c1, c2, y_margin=0):
+    overlap = max(0, min(c1.bbox[3] + y_margin, c2.bbox[3] + y_margin) - max(c1.bbox[1] - y_margin, c2.bbox[1] - y_margin))
+    c1_height = c1.bbox[3] - c1.bbox[1]
+    c2_height = c2.bbox[3] - c2.bbox[1]
+    max_height = max(c1_height, c2_height)
+    return (overlap / max_height) * 100 if max_height > 0 else 0
 
-def y_overlap(c1, c2, y_margin=0):
-    return max(0, min(c1.bbox[3] + y_margin, c2.bbox[3] + y_margin) - max(c1.bbox[1] - y_margin, c2.bbox[1] - y_margin))
-
-def x_overlap(c1, c2, x_margin=0):
-    return max(0, min(c1.bbox[2] + x_margin, c2.bbox[2] + x_margin) - max(c1.bbox[0] - x_margin, c2.bbox[0] - x_margin))
+def x_overlap_pc(c1, c2, x_margin=0):
+    overlap = max(0, min(c1.bbox[2] + x_margin, c2.bbox[2] + x_margin) - max(c1.bbox[0] - x_margin, c2.bbox[0] - x_margin))
+    c1_width = c1.bbox[2] - c1.bbox[0]
+    c2_width = c2.bbox[2] - c2.bbox[0]
+    max_width = max(c1_width, c2_width)
+    return (overlap / max_width) * 100 if max_width > 0 else 0
 
 def is_rotated(rows, cols):
     # Determine if the table is rotated by looking at row and column width / height ratios
@@ -62,7 +69,7 @@ def initial_assignment(detection_result: TableResult, thresh=.5) -> List[SpanTab
             if row.row_id in overlapper_rows:
                 continue
 
-            intersection_pct = y_overlap(cell,row)
+            intersection_pct = y_overlap_pct(cell,row)
             if intersection_pct > max_intersection and intersection_pct > thresh:
                 max_intersection = intersection_pct
                 row_pred = row.row_id
@@ -73,7 +80,7 @@ def initial_assignment(detection_result: TableResult, thresh=.5) -> List[SpanTab
             if col.col_id in overlapper_cols:
                 continue
 
-            intersection_pct = x_overlap(cell,row)
+            intersection_pct = x_overlap_pct(cell,row)
             if intersection_pct > max_intersection and intersection_pct > thresh:
                 max_intersection = intersection_pct
                 col_pred = col.col_id
@@ -100,7 +107,7 @@ def assign_overlappers(cells: List[SpanTableCell], detection_result: TableResult
             if row.row_id not in overlapper_rows:
                 continue
 
-            intersection_pct = y_overlap(cell,row)
+            intersection_pct = y_overlap_pct(cell,row)
             if intersection_pct > max_intersection and intersection_pct > thresh:
                 max_intersection = intersection_pct
                 row_pred = row.row_id
@@ -111,7 +118,7 @@ def assign_overlappers(cells: List[SpanTableCell], detection_result: TableResult
             if col.col_id not in overlapper_cols:
                 continue
 
-            intersection_pct = x_overlap(cell,row)
+            intersection_pct = x_overlap_pct(cell,row)
             if intersection_pct > max_intersection and intersection_pct > thresh:
                 max_intersection = intersection_pct
                 col_pred = col.col_id
@@ -301,12 +308,12 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
 
 
 def assign_rows_columns(detection_result: TableResult, image_size: list, heuristic_thresh=.6) -> List[SpanTableCell]:
-    table_cells = initial_assignment(detection_result, thresh = 0)
+    table_cells = initial_assignment(detection_result, thresh = 0.4)
     print("Table:")
     print(table_cells)
     merge_multiline_rows(detection_result, table_cells)
-    table_cells = initial_assignment(detection_result,thresh = 0)
-    assign_overlappers(table_cells, detection_result, thresh = 0)
+    table_cells = initial_assignment(detection_result,thresh = 0.4)
+    assign_overlappers(table_cells, detection_result, thresh = 0.4)
     total_unassigned = len([tc for tc in table_cells if tc.row_ids[0] is None or tc.col_ids[0] is None])
     print(f"Non assigné {total_unassigned}. \n")
     unassigned_frac = total_unassigned / max(len(table_cells), 1)
