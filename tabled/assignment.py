@@ -7,6 +7,9 @@ from tabled.heuristics import heuristic_layout
 from tabled.schema import SpanTableCell
 
 
+def y_overlap(c1, c2, y_margin=0):
+    return max(0, min(c1.bbox[3] + y_margin, c2.bbox[3] + y_margin) - max(c1.bbox[1] - y_margin, c2.bbox[1] - y_margin))
+
 def is_rotated(rows, cols):
     # Determine if the table is rotated by looking at row and column width / height ratios
     # Rows should have a >1 ratio, cols <1
@@ -94,7 +97,7 @@ def assign_overlappers(cells: List[SpanTableCell], detection_result: TableResult
             if row.row_id not in overlapper_rows:
                 continue
 
-            intersection_pct = Bbox(bbox=cell.bbox).intersection_pct(row)
+            intersection_pct = y_overlap(cell,row)
             if intersection_pct > max_intersection and intersection_pct > thresh:
                 max_intersection = intersection_pct
                 row_pred = row.row_id
@@ -105,7 +108,7 @@ def assign_overlappers(cells: List[SpanTableCell], detection_result: TableResult
             if col.col_id not in overlapper_cols:
                 continue
 
-            intersection_pct = Bbox(bbox=cell.bbox).intersection_pct(col)
+            intersection_pct = x_overlap(cell,row)
             if intersection_pct > max_intersection and intersection_pct > thresh:
                 max_intersection = intersection_pct
                 col_pred = col.col_id
