@@ -13,7 +13,7 @@ def y_overlap_pct(c1, c2, y_margin=0):
     max_height = max(c1_height, c2_height)
     return (overlap / max_height) * 100 if max_height > 0 else 0
 
-def x_overlap_pc(c1, c2, x_margin=0):
+def x_overlap_pct(c1, c2, x_margin=0):
     overlap = max(0, min(c1.bbox[2] + x_margin, c2.bbox[2] + x_margin) - max(c1.bbox[0] - x_margin, c2.bbox[0] - x_margin))
     c1_width = c1.bbox[2] - c1.bbox[0]
     c2_width = c2.bbox[2] - c2.bbox[0]
