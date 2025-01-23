@@ -176,39 +176,47 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
     def find_row_gap(r1, r2):
         return min([abs(r1.bbox[1] - r2.bbox[3]), abs(r2.bbox[1] - r1.bbox[3])])
 
-    def calculate_horizontal_distance(box1, box2):
+    def calculate_box_distance(box1, box2):
         """
-        Calcule la distance horizontale entre les bords ou coins des deux boîtes.
-        
+        Calcule la distance verticale entre deux boîtes si elles se chevauchent horizontalement,
+        sinon, calcule la distance entre les coins les plus proches.
+    
         :param box1: Liste [x1, y1, x2, y2] pour la première boîte
         :param box2: Liste [x1, y1, x2, y2] pour la deuxième boîte
-        :return: Distance horizontale entre les deux boîtes
+        :return: Distance entre les deux boîtes
         """
-        # Vérifier si les boîtes se chevauchent verticalement
-        if box1[3] < box2[1] or box2[3] < box1[1]:
-            # Si elles ne se chevauchent pas verticalement, calculer la distance horizontale minimale
-            # Cas où box1 est à gauche de box2
-            if box1[2] < box2[0]:
-                horizontal_distance = box2[0] - box1[2]
-            # Cas où box2 est à gauche de box1
-            elif box2[2] < box1[0]:
-                horizontal_distance = box1[0] - box2[2]
+        # Vérifier si les boîtes se chevauchent horizontalement
+        if box1[2] >= box2[0] and box2[2] >= box1[0]:
+            # Les boîtes se chevauchent horizontalement
+            if box1[3] < box2[1]:  # box1 est au-dessus de box2
+                vertical_distance = box2[1] - box1[3]
+            elif box2[3] < box1[1]:  # box2 est au-dessus de box1
+                vertical_distance = box1[1] - box2[3]
             else:
-                # Elles se chevauchent horizontalement
-                horizontal_distance = 0
+                vertical_distance = 0  # Les boîtes se touchent ou se chevauchent verticalement
+            return vertical_distance
         else:
-            # Si elles se chevauchent verticalement, calculer la distance horizontale entre les coins supérieurs ou inférieurs
-            top_distance = abs(box1[0] - box2[0])  # Distance entre les coins supérieurs gauche
-            bottom_distance = abs(box1[2] - box2[2])  # Distance entre les coins inférieurs droite
-            horizontal_distance = min(top_distance, bottom_distance)
-        
-        return horizontal_distance    
+            # Les boîtes ne se chevauchent pas horizontalement
+            # Calculer la distance entre les coins les plus proches
+            if box1[2] < box2[0]:  # box1 est complètement à gauche de box2
+                closest_distance = min(
+                    ((box1[2] - box2[0]) ** 2 + (box1[1] - box2[3]) ** 2) ** 0.5,  # Coin inférieur droit de box1 vers supérieur gauche de box2
+                    ((box1[2] - box2[0]) ** 2 + (box1[3] - box2[1]) ** 2) ** 0.5   # Coin supérieur droit de box1 vers inférieur gauche de box2
+                )
+            elif box2[2] < box1[0]:  # box2 est complètement à gauche de box1
+                closest_distance = min(
+                    ((box2[2] - box1[0]) ** 2 + (box2[1] - box1[3]) ** 2) ** 0.5,  # Coin inférieur droit de box2 vers supérieur gauche de box1
+                    ((box2[2] - box1[0]) ** 2 + (box2[3] - box1[1]) ** 2) ** 0.5   # Coin supérieur droit de box2 vers inférieur gauche de box1
+                )
+            else:
+                closest_distance = 0  # Cas où il y a une erreur logique (ne devrait pas arriver)
+            return closest_distance
         
     def find_gap_cells(list_cell1,list_cell2):
         values = []
         for c1 in list_cell1:
             for c2 in list_cell2:
-                values.append(calculate_horizontal_distance(c1.bbox,c2.bbox))
+                values.append(calculate_box_distance(c1.bbox,c2.bbox))
         return min(values)
 
     all_cols = set([tc.col_ids[0] for tc in table_cells])
