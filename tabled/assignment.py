@@ -57,7 +57,7 @@ def initial_assignment(detection_result: TableResult, thresh=.5) -> List[SpanTab
                 continue
 
             intersection_pct = Bbox(bbox=cell.bbox).intersection_pct(row)
-            if intersection_pct > max_intersection:
+            if intersection_pct > max_intersection and intersection_pct > thresh:
                 max_intersection = intersection_pct
                 row_pred = row.row_id
 
@@ -68,7 +68,7 @@ def initial_assignment(detection_result: TableResult, thresh=.5) -> List[SpanTab
                 continue
 
             intersection_pct = Bbox(bbox=cell.bbox).intersection_pct(col)
-            if intersection_pct > max_intersection:
+            if intersection_pct > max_intersection and intersection_pct > thresh:
                 max_intersection = intersection_pct
                 col_pred = col.col_id
 
@@ -253,9 +253,10 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
 def assign_rows_columns(detection_result: TableResult, image_size: list, heuristic_thresh=.6) -> List[SpanTableCell]:
     table_cells = initial_assignment(detection_result)
     merge_multiline_rows(detection_result, table_cells)
-    table_cells = initial_assignment(detection_result)
-    assign_overlappers(table_cells, detection_result)
+    table_cells = initial_assignment(detection_result,tresh = 0)
+    assign_overlappers(table_cells, detection_result = tresh = 0)
     total_unassigned = len([tc for tc in table_cells if tc.row_ids[0] is None or tc.col_ids[0] is None])
+    print(f"Non assigné {total_unassigned}. \n"
     unassigned_frac = total_unassigned / max(len(table_cells), 1)
 
     if unassigned_frac > heuristic_thresh:
