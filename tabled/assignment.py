@@ -203,7 +203,7 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
                 row.row_id = len(new_rows)
                 new_rows.append(row)
                 continue
-            current_cells.extend([tc for tc in table_cells if tc.row_ids[0] == row.row_id -1]
+            current_cells.extend([tc for tc in table_cells if tc.row_ids[0] == row.row_id -1])
             r1_cells = current_cells
             r2_cells = [tc for tc in table_cells if tc.row_ids[0] == row.row_id]
             r1_cols = set([tc.col_ids[0] for tc in r1_cells])
