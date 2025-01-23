@@ -188,66 +188,55 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
     ]
     if len(row_gaps) == 0:
         return
-    print(row_gaps)
     gap_thresh = np.percentile(row_gaps,90)
+    nb_row = len(detection_result.rows)
+    if nb_row>0:
+        idx = 0
+        new_rows = [detection_result.rows[0]]
+        for idx in range(nb_row):
+            prev_row = new_rows[-1]
+            row = detection_result.rows[idx]
+            gap = find_row_gap(prev_row, row)
+    
+            # Ensure the gap between r2 and r1 is small
+            if gap > gap_thresh:
+                row.row_id = len(new_rows)
+                new_rows.append(row)
+                continue
+    
+            r1_cells = [tc for tc in table_cells if tc.row_ids[0] == prev_row.row_id]
+            r2_cells = [tc for tc in table_cells if tc.row_ids[0] == row.row_id]
+            r1_cols = set([tc.col_ids[0] for tc in r1_cells])
+            r2_cols = set([tc.col_ids[0] for tc in r2_cells])
+    
+            # Ensure all columns in r2 are in r1
+            print(f"R1_Col = {r1_cols}")
+            print(f"R2_Col = {r2_cols}")
+            print(f"R1_Cel = {r1_cells}")
+            print(f"R2_Cel = {r2_cells}")
+    
+            if len(r2_cols - r1_cols) > 0:
+                row.row_id = len(new_rows)
+                new_rows.append(row)
+                continue
 
-    for idx, row in enumerate(detection_result.rows[1:]):
-        print(gap_thresh)
-        prev_row = detection_result.rows[idx]
-        gap = find_row_gap(prev_row, row)
-        print("Gap:")
-        print(gap)
-
-        # Ensure the gap between r2 and r1 is small
-        if gap > gap_thresh:
-            continue
-        print("passage gap")
-
-        r1_cells = [tc for tc in table_cells if tc.row_ids[0] == prev_row.row_id]
-        r2_cells = [tc for tc in table_cells if tc.row_ids[0] == row.row_id]
-        r1_cols = set([tc.col_ids[0] for tc in r1_cells])
-        r2_cols = set([tc.col_ids[0] for tc in r2_cells])
-
-        # Ensure all columns in r2 are in r1
-        print(f"R1_Col = {r1_cols}")
-        print(f"R2_Col = {r2_cols}")
-        print(f"R1_Cel = {r1_cells}")
-        print(f"R2_Cel = {r2_cells}")
-
-        if len(r2_cols - r1_cols) > 0:
-
-            continue
-
-        print("passage du décalage")
-
-        # Ensure r2 has mostly blank cells
-        if len(r2_cols) / len(all_cols) > .9:
-            continue
-        print("passage du blanc")
-
-        merged_pairs.append((idx, idx+1))
-
-    merged_pairs_sorted = sorted(merged_pairs, key=lambda x: x[0], reverse=True)
-    print(merged_pairs_sorted)
-    to_remove = set()
-    for r1_idx, r2_idx in merged_pairs_sorted:
-        print(r1_idx)
-        detection_result.rows[r1_idx].bbox = [
-            min(detection_result.rows[r1_idx].bbox[0], detection_result.rows[r2_idx].bbox[0]),
-            min(detection_result.rows[r1_idx].bbox[1], detection_result.rows[r2_idx].bbox[1]),
-            max(detection_result.rows[r1_idx].bbox[2], detection_result.rows[r2_idx].bbox[2]),
-            max(detection_result.rows[r1_idx].bbox[3], detection_result.rows[r2_idx].bbox[3])
-        ]
-        to_remove.add(r2_idx)
-
-    new_rows = []
-    row_counter = 0
-    for idx, row in enumerate(detection_result.rows):
-        if idx not in to_remove:
-            row.row_id = row_counter
-            new_rows.append(row)
-            row_counter += 1
-    detection_result.rows = new_rows
+            # Ensure r2 has mostly blank cells
+            if len(r2_cols) / len(all_cols) > .9:
+                row.row_id = len(new_rows)
+                new_rows.append(row)
+                continue
+            
+            r1_idx = prev_row.row_id
+            r2_idx = row.row_id
+            detection_result.rows[r1_idx].bbox = [
+                min(detection_result.rows[r1_idx].bbox[0], detection_result.rows[r2_idx].bbox[0]),
+                min(detection_result.rows[r1_idx].bbox[1], detection_result.rows[r2_idx].bbox[1]),
+                max(detection_result.rows[r1_idx].bbox[2], detection_result.rows[r2_idx].bbox[2]),
+                max(detection_result.rows[r1_idx].bbox[3], detection_result.rows[r2_idx].bbox[3])
+            ]
+            detection_result.rows[idx].row_id = len(new_rows)-1
+            
+        detection_result.rows = new_rows
 
 
 def assign_rows_columns(detection_result: TableResult, image_size: list, heuristic_thresh=.6) -> List[SpanTableCell]:
