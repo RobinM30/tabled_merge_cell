@@ -10,7 +10,7 @@ from tabled.schema import SpanTableCell
 def y_overlap(c1, c2, y_margin=0):
     return max(0, min(c1.bbox[3] + y_margin, c2.bbox[3] + y_margin) - max(c1.bbox[1] - y_margin, c2.bbox[1] - y_margin))
 
-def x_overlap(c1, c2, y_margin=0):
+def x_overlap(c1, c2, x_margin=0):
     return max(0, min(c1.bbox[2] + x_margin, c2.bbox[2] + x_margin) - max(c1.bbox[0] - x_margin, c2.bbox[0] - x_margin))
 
 def is_rotated(rows, cols):
