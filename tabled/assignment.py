@@ -250,7 +250,7 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
             print(f"R1_Col = {r1_cols}")
             print(f"R2_Col = {r2_cols}")
             print(f"R1_Cel = {r1_cells}")
-            print(f"R2_Cel = {r2_cells}"\n\n")
+            print(f"R2_Cel = {r2_cells}\n\n")
 
             
             reasons = []
