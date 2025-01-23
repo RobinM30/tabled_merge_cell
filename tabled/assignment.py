@@ -173,7 +173,6 @@ def handle_rowcol_spans(table_cells: list, detection_result: TableResult, thresh
 
 
 def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTableCell]):
-    print(table_cells)
     def find_row_gap(r1, r2):
         return min([abs(r1.bbox[1] - r2.bbox[3]), abs(r2.bbox[1] - r1.bbox[3])])
 
@@ -193,6 +192,7 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
     if nb_row>0:
         idx = 0
         new_rows = [detection_result.rows[0]]
+        current_cells = []
         for idx in range(nb_row):
             prev_row = new_rows[-1]
             row = detection_result.rows[idx]
@@ -203,8 +203,8 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
                 row.row_id = len(new_rows)
                 new_rows.append(row)
                 continue
-    
-            r1_cells = [tc for tc in table_cells if tc.row_ids[0] == prev_row.row_id]
+            current_cells.extend([tc for tc in table_cells if tc.row_ids[0] == row.row_id -1]
+            r1_cells = current_cells
             r2_cells = [tc for tc in table_cells if tc.row_ids[0] == row.row_id]
             r1_cols = set([tc.col_ids[0] for tc in r1_cells])
             r2_cols = set([tc.col_ids[0] for tc in r2_cells])
@@ -235,6 +235,7 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
                 max(detection_result.rows[r1_idx].bbox[3], detection_result.rows[r2_idx].bbox[3])
             ]
             detection_result.rows[idx].row_id = len(new_rows)-1
+            print("Merged !")
             
         detection_result.rows = new_rows
 
