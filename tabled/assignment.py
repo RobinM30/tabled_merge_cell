@@ -44,6 +44,10 @@ def initial_assignment(detection_result: TableResult, thresh=.5) -> List[SpanTab
     overlapper_rows = overlapper_idxs(detection_result.rows, field="row_id")
     overlapper_cols = overlapper_idxs(detection_result.cols, field="col_id")
 
+    print("OverLaps: \n")
+    print(overlapper_rows)
+    print(overlapper_cols)
+
     cells = []
     for cell in detection_result.cells:
         max_intersection = 0
