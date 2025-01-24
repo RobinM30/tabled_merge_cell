@@ -265,7 +265,7 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
             else :
                 gap = find_row_gap(prev_row, row)
             print(f"Gap : {gap}")
-
+            
     
             # Ensure all columns in r2 are in r1
             print(f"R1_Col = {r1_cols}")
@@ -287,16 +287,22 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
             
             if reasons:  # Si au moins une condition est vraie
                 print("Raisons pour entrer dans la boucle :", ", ".join(reasons))
+                new_rows[-1].bbox = [
+                    min([c.bbox[0] for c in current_cells]),
+                    min([c.bbox[1] for c in current_cells]),
+                    max([c.bbox[2] for c in current_cells]),
+                    max([c.bbox[3] for c in current_cells])
+                ]
                 new_rows.append(row)
                 current_cells = []
                 continue
-                            
+            current_cells.extend([tc for tc in table_cells if tc.row_ids[0] == idx-1])                
             r2_idx = row.row_id
             new_rows[-1].bbox = [
-                min(new_rows[-1].bbox[0], detection_result.rows[r2_idx].bbox[0]),
-                min(new_rows[-1].bbox[1], detection_result.rows[r2_idx].bbox[1]),
-                max(new_rows[-1].bbox[2], detection_result.rows[r2_idx].bbox[2]),
-                max(new_rows[-1].bbox[3], detection_result.rows[r2_idx].bbox[3])
+                min([c.bbox[0] for c in current_cells]),
+                min([c.bbox[1] for c in current_cells]),
+                max([c.bbox[2] for c in current_cells]),
+                max([c.bbox[3] for c in current_cells])
             ]
             print("Merged !")
             print(new_rows[-1].bbox)
