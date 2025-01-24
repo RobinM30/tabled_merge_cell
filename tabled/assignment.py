@@ -287,6 +287,9 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
             
             if reasons:  # Si au moins une condition est vraie
                 print("Raisons pour entrer dans la boucle :", ", ".join(reasons))
+                print(new_rows)
+                print(new_rows[-1])
+                print([c.bbox[0] for c in current_cells].append(new_rows[-1].bbox[0]))
                 new_rows[-1].bbox = [
                     min([c.bbox[0] for c in current_cells].append(new_rows[-1].bbox[0])),
                     min([c.bbox[1] for c in current_cells].append(new_rows[-1].bbox[1])),
