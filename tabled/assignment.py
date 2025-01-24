@@ -252,7 +252,6 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
         for idx in range(nb_row):
             prev_row = new_rows[-1]
             row = detection_result.rows[idx]
-    
             # Ensure the gap between r2 and r1 is small
 
             current_cells.extend([tc for tc in table_cells if tc.row_ids[0] == idx-1])
@@ -265,6 +264,9 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
             else :
                 gap = find_row_gap(prev_row, row)
             print(f"Gap : {gap}")
+
+            if len(r2_cells) == 0:
+                continue
             
     
             # Ensure all columns in r2 are in r1
@@ -272,6 +274,8 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
             print(f"R2_Col = {r2_cols}")
             print(f"R1_Cel = {r1_cells}")
             print(f"R2_Cel = {r2_cells}\n\n")
+            if len(r2_cells) == 0:
+                continue
 
             
             reasons = []
