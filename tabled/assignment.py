@@ -299,11 +299,13 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
                 max(new_rows[-1].bbox[3], detection_result.rows[r2_idx].bbox[3])
             ]
             print("Merged !")
+            print(new_rows[-1].bbox)
 
         for i in range(len(new_rows)):
             new_rows[i].row_id=i
             
         detection_result.rows = new_rows
+        print(new_rows)
 
 
 def assign_rows_columns(detection_result: TableResult, image_size: list, heuristic_thresh=.6) -> List[SpanTableCell]:
