@@ -318,8 +318,10 @@ def assign_rows_columns(detection_result: TableResult, image_size: list, heurist
     table_cells = initial_assignment(detection_result,thresh = 0.6)
     print("Table reassign:")
     print(table_cells)
-    assign_overlappers(table_cells, detection_result, thresh = 0.6)
-    print("Table overlaps:")
+    #assign_overlappers(table_cells, detection_result, thresh = 0.6)
+    assign_unassigned(table_cells, detection_result)
+
+    #print("Table overlaps:")
     print(table_cells)
     total_unassigned = len([tc for tc in table_cells if tc.row_ids[0] is None or tc.col_ids[0] is None])
     print(f"Non assigné {total_unassigned}. \n")
