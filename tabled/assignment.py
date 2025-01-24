@@ -309,6 +309,7 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
 
 def assign_rows_columns(detection_result: TableResult, image_size: list, heuristic_thresh=.6) -> List[SpanTableCell]:
     table_cells = initial_assignment(detection_result, thresh = 0.6)
+    assign_unassigned(table_cells, detection_result)
     print("Table:")
     print(table_cells)
     merge_multiline_rows(detection_result, table_cells)
