@@ -255,7 +255,7 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
     
             # Ensure the gap between r2 and r1 is small
 
-            current_cells.extend([tc for tc in table_cells if tc.row_ids[0] == row.row_id -1])
+            current_cells.extend([tc for tc in table_cells if tc.row_ids[0] == prev_row.row_id])
             r1_cells = current_cells
             r2_cells = [tc for tc in table_cells if tc.row_ids[0] == row.row_id]
             r1_cols = set([tc.col_ids[0] for tc in r1_cells])
@@ -287,22 +287,21 @@ def merge_multiline_rows(detection_result: TableResult, table_cells: List[SpanTa
             
             if reasons:  # Si au moins une condition est vraie
                 print("Raisons pour entrer dans la boucle :", ", ".join(reasons))
-                row.row_id = len(new_rows)
                 new_rows.append(row)
                 current_cells = []
                 continue
                             
-            r1_idx = prev_row.row_id
             r2_idx = row.row_id
-            detection_result.rows[r1_idx].bbox = [
-                min(detection_result.rows[r1_idx].bbox[0], detection_result.rows[r2_idx].bbox[0]),
-                min(detection_result.rows[r1_idx].bbox[1], detection_result.rows[r2_idx].bbox[1]),
-                max(detection_result.rows[r1_idx].bbox[2], detection_result.rows[r2_idx].bbox[2]),
-                max(detection_result.rows[r1_idx].bbox[3], detection_result.rows[r2_idx].bbox[3])
+            new_rows[-1].bbox = [
+                min(new_rows[-1].bbox[0], detection_result.rows[r2_idx].bbox[0]),
+                min(new_rows[-1].bbox[1], detection_result.rows[r2_idx].bbox[1]),
+                max(new_rows[-1].bbox[2], detection_result.rows[r2_idx].bbox[2]),
+                max(new_rows[-1].bbox[3], detection_result.rows[r2_idx].bbox[3])
             ]
-            new_rows[-1].bbox = detection_result.rows[r1_idx].bbox
-            detection_result.rows[idx].row_id = len(new_rows)-1
             print("Merged !")
+
+        for i in range(len(new_rows)):
+            new_rows[i].row_id=i
             
         detection_result.rows = new_rows
 
